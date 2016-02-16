@@ -1,21 +1,78 @@
 var Jeans = (function() {
 
     var transformProps = ["x", "y", "scaleX", "scaleY", "rotate"];
+    var timeProps = ["time", "ease", "delay"];
+    var callbackProps = ["onEnd", "onEndArgs"];
+    var FRAME_RATE = 33;
     var animationObjects = [];
 
-    function go(element, timeObj, tweenProps, callbackObj) {
-        var obj = { element: element, timeObj: timeObj, tweenProps: tweenProps, callbackObj: callbackObj };
+    function go(element, props) {
+        var obj = { element: element, props: props };
+        parseProperties(obj);
         createTransition(obj);
-        setTimeout(setProperties, 1, obj);
         animationObjects.push(obj);
+        setTimeout(setProperties, 1, obj);
         setCallback(obj);
     }
 
+    function scrollTo(element, props) {
+        var obj = { element: element, props: props, step: 0 };
+        setScrollProperties(obj);
+        if (obj.props.delay) {
+            setTimeout(function() {
+                animateScroll(obj);
+            }, obj.props.delay * 1000);
+        } else {
+            animateScroll(obj);
+        }
+        animationObjects.push(obj);
+    }
+
+    function setScrollProperties(obj) {
+        obj.beginTop = obj.element.scrollTop;
+        obj.change = obj.props.top - obj.beginTop;
+        obj.props.time = obj.props.time * 1000;
+    }
+
+    function parseProperties(obj) {
+        var nonTweenProps = timeProps.concat(callbackProps);
+        obj.tweenObj = {};
+        for (key in obj.props) {
+            if (contains(nonTweenProps, key)) {
+                obj[key] = obj.props[key];
+            } else {
+                obj.tweenObj[key] = obj.props[key];
+            }
+        }
+    }
+
+    function animateScroll(obj) {
+        var totalSteps = obj.props.time / FRAME_RATE;
+        var top = jsEaseOut(obj.step++, obj.beginTop, obj.change, totalSteps);
+        obj.element.scrollTop = top;
+        if (obj.step >= totalSteps) {
+            obj.element.scrollTop = obj.props.top;
+            executeCallback(obj.props);
+            removeAnimationObject(obj);
+        } else {
+            setTimeout(function () {
+                requestAnimationFrame(function () {
+                    animateScroll(obj);
+                });
+            }, FRAME_RATE);
+        }
+    }
+
+    function jsEaseOut(t, b, c, d) {
+        return (t==d) ? b+c : c * (-Math.pow(2, -10 * t/d) + 1) + b;
+    }
+
     function createTransition(obj) {
-        obj.element.style.transitionProperty = getTransitionProperties(obj.tweenProps);
-        obj.element.style.transitionDuration = obj.timeObj.time + "s";
-        obj.element.style.transitionTimingFunction = obj.timeObj.ease || "linear";
-        obj.element.style.transitionDelay = obj.timeObj.delay + "s" || 0;
+        var time = obj.time || 0, delay = obj.delay || 0;
+        obj.element.style.transitionProperty = getTransitionProperties(obj.tweenObj);
+        obj.element.style.transitionDuration = time + "s";
+        obj.element.style.transitionTimingFunction = obj.ease || "linear";
+        obj.element.style.transitionDelay = delay + "s";
     }
 
     function getTransitionProperties(obj) {
@@ -23,7 +80,7 @@ var Jeans = (function() {
         var properties = [];
 
         for (var key in obj) {
-            if (isTransform(key)) {
+            if (contains(transformProps, key)) {
                 hasTransform = true;
             } else {
                 key = key.replace(/\W+/g, '-').replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
@@ -39,68 +96,48 @@ var Jeans = (function() {
     }
 
     function setProperties(obj) {
-        var hasTransforms = false;
-
-        for (var key in obj.tweenProps) {
-            if (!isTransform(key)) {
+        var key, transforms = "";
+        for (key in obj.tweenObj) {
+            if (!contains(transformProps, key)) {
                 setRegularProps(obj, key);
             } else {
-                setTransformProps(obj, key);
-                hasTransforms = true;
+                transforms += setTransformProps(obj.tweenObj, key);
             }
         }
 
-        if(hasTransforms) {
-            var translate = ' translate(' + obj.translations.x + 'px, ' + obj.translations.y + 'px)';
-            var scale = ' scale(' + obj.translations.scaleX + ', ' + obj.translations.scaleY + ')';
-            var rotation = ' rotate(' + obj.translations.rotate + 'deg)';
-            obj.element.style.WebkitTransform = obj.element.style.transform = translate + scale + rotation;
+        if(transforms.length > 0) {
+            obj.element.style.transform = transforms;
         }
     }
 
     function setRegularProps(obj, key) {
-        var value = obj.tweenProps[key];
+        var value = obj.tweenObj[key];
         value += (key !== "opacity") && (key !== "backgroundColor") ? "px" : "";
-        console.log(value);
         obj.element.style[key] = value;
     }
 
-    function setTransformProps(obj, key) {
-        if(!obj.translations) {
-            obj.translations = {
-                x: 0,
-                y: 0,
-                rotate: 0,
-                scaleX: 1,
-                scaleY: 1,
-                xOffset: obj.element.offsetLeft,
-                yOffset: obj.element.offsetTop,
-                rotateOffset: 0,
-                scaleXOffset: 0,
-                scaleYOffset: 0
-            };
+    function setTransformProps(tweenObj, key) {
+        if (/x|y|z/.test(key)) {
+            return 'translate' + key.toUpperCase() + '(' + tweenObj[key] + 'px) ';
+        } else if (key.indexOf('scale') > -1) {
+            return key + '(' + tweenObj[key] + ') ';
+        } else if ( key === 'rotate') {
+            return 'rotate(' + tweenObj[key] + 'deg) ';
         }
-
-        obj.translations[key] = obj.tweenProps[key] - obj.translations[key + "Offset"];
     }
 
     function setCallback(obj) {
-        obj.element.addEventListener('webkitTransitionEnd', complete);
-        obj.element.addEventListener('transitionend', complete);
+        obj.element.addEventListener('webkitTransitionEnd', complete, false);
+        obj.element.addEventListener('transitionend', complete, false);
     }
 
     function complete(event) {
         event.target.removeEventListener('webkitTransitionEnd', complete);
         event.target.removeEventListener('transitionend', complete);
         var obj = getAnimationObjByElement(event.target);
-        if(obj.callbackObj) {
-            var scope = obj.callbackObj.scope || null;
-            var endArgs = obj.callbackObj.endArgs || [];
-            obj.callbackObj.end.apply(scope, endArgs);
-            cleanAnimationObjects(obj);
-        } else {
-            cleanAnimationObjects(obj);
-        }
+        executeCallback(obj);
+        obj.element.style.transition = "none";
+        removeAnimationObject(obj);
     }
 
     function getAnimationObjByElement(element) {
@@ -113,7 +150,7 @@ var Jeans = (function() {
         return null;
     }
 
-    function cleanAnimationObjects(obj) {
+    function removeAnimationObject(obj) {
         var i = animationObjects.length;
         while (i--) {
             if(animationObjects[i] === obj) {
@@ -122,10 +159,17 @@ var Jeans = (function() {
         }
     }
 
-    function isTransform(value) {
-        var i = transformProps.length;
+    function executeCallback(obj) {
+        if(obj.onEnd) {
+            var endArgs = obj.onEndArgs || [];
+            obj.onEnd.apply(null, endArgs);
+        }
+    }
+
+    function contains(array, value) {
+        var i = array.length;
         while(i--) {
-            if(value === transformProps[i]) {
+            if(value === array[i]) {
                 return true;
             }
         }
@@ -133,6 +177,7 @@ var Jeans = (function() {
     }
 
     return {
-        go: go
+        go: go,
+        scrollTo: scrollTo
     }
 }());
