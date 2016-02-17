@@ -5,6 +5,7 @@ var Jeans = (function() {
     var callbackProps = ["onEnd", "onEndArgs"];
     var FRAME_RATE = 33;
     var animationObjects = [];
+    var transformations = [];
 
     function go(element, props) {
         var obj = { element: element, props: props };
@@ -48,7 +49,7 @@ var Jeans = (function() {
 
     function animateScroll(obj) {
         var totalSteps = obj.props.time / FRAME_RATE;
-        var top = jsEaseOut(obj.step++, obj.beginTop, obj.change, totalSteps);
+        var top = easeOutExpo(obj.step++, obj.beginTop, obj.change, totalSteps);
         obj.element.scrollTop = top;
         if (obj.step >= totalSteps) {
             obj.element.scrollTop = obj.props.top;
@@ -63,9 +64,6 @@ var Jeans = (function() {
         }
     }
 
-    function jsEaseOut(t, b, c, d) {
-        return (t==d) ? b+c : c * (-Math.pow(2, -10 * t/d) + 1) + b;
-    }
 
     function createTransition(obj) {
         var time = obj.time || 0, delay = obj.delay || 0;
@@ -101,12 +99,11 @@ var Jeans = (function() {
             if (!contains(transformProps, key)) {
                 setRegularProps(obj, key);
             } else {
-                transforms += setTransformProps(obj.tweenObj, key);
+                transforms += setTransformProps(obj, key);
             }
         }
-
-        if(transforms.length > 0) {
-            obj.element.style.transform = transforms;
+        if (obj.transformations) {
+           setTransformations(obj);
         }
     }
 
@@ -116,14 +113,21 @@ var Jeans = (function() {
         obj.element.style[key] = value;
     }
 
-    function setTransformProps(tweenObj, key) {
-        if (/x|y|z/.test(key)) {
-            return 'translate' + key.toUpperCase() + '(' + tweenObj[key] + 'px) ';
-        } else if (key.indexOf('scale') > -1) {
-            return key + '(' + tweenObj[key] + ') ';
-        } else if ( key === 'rotate') {
-            return 'rotate(' + tweenObj[key] + 'deg) ';
+    function setTransformProps(obj, key) {
+        if(!contains(transformations, obj)) {
+            obj.transformations = { x:0, y:0, rotation:0, scaleX:1, scaleY:1 };
+
         }
+
+        obj.transformations[key] = obj.tweenObj[key];
+    }
+
+    function setTransformations(obj) {
+        var translate, scale, rotate;
+        translate = ' translate(' + obj.transformations.x + 'px, ' + obj.transformations.y + 'px)';
+        scale = ' scale(' + obj.transformations.scaleX + ', ' + obj.transformations.scaleY + ')';
+        rotate = ' rotate(' + obj.transformations.rotate + 'deg)';
+        obj.element.style.WebkitTransform = obj.element.style.transform = translate + scale + rotate;
     }
 
     function setCallback(obj) {
@@ -135,8 +139,8 @@ var Jeans = (function() {
         event.target.removeEventListener('webkitTransitionEnd', complete);
         event.target.removeEventListener('transitionend', complete);
         var obj = getAnimationObjByElement(event.target);
+        //obj.element.style.transition = "none";
         executeCallback(obj);
-        obj.element.style.transition = "none";
         removeAnimationObject(obj);
     }
 
@@ -174,6 +178,29 @@ var Jeans = (function() {
             }
         }
         return false;
+    }
+
+	/**  Scroll Easing
+     *
+     * TERMS OF USE - EASING EQUATIONS
+
+     Open source under the BSD License.
+
+     Copyright © 2001 Robert Penner
+     All rights reserved.
+
+     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+     Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+     Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+     Neither the name of the author nor the names of contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+     */
+
+    function easeOutExpo(t, b, c, d) {
+        return (t==d) ? b+c : c * (-Math.pow(2, -10 * t/d) + 1) + b;
     }
 
     return {
