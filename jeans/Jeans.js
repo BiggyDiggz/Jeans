@@ -5,7 +5,6 @@ var Jeans = (function() {
     var callbackProps = ["onEnd", "onEndArgs"];
     var FRAME_RATE = 33;
     var animationObjects = [];
-    var transformations = [];
 
     function go(element, props) {
         var obj = { element: element, props: props };
@@ -64,7 +63,6 @@ var Jeans = (function() {
         }
     }
 
-
     function createTransition(obj) {
         var time = obj.time || 0, delay = obj.delay || 0;
         obj.element.style.transitionProperty = getTransitionProperties(obj.tweenObj);
@@ -94,16 +92,18 @@ var Jeans = (function() {
     }
 
     function setProperties(obj) {
-        var key, transforms = "";
+        var key, matrix;
         for (key in obj.tweenObj) {
             if (!contains(transformProps, key)) {
                 setRegularProps(obj, key);
             } else {
-                transforms += setTransformProps(obj, key);
+                setTransformProps(obj, key);
             }
         }
         if (obj.transformations) {
-           setTransformations(obj);
+            getTransformProps(obj);
+            matrix = new WebKitCSSMatrix(window.getComputedStyle(obj.element).webkitTransform);
+            setTransformations(obj, matrix);
         }
     }
 
@@ -114,21 +114,54 @@ var Jeans = (function() {
     }
 
     function setTransformProps(obj, key) {
-        if(!contains(transformations, obj)) {
-            obj.transformations = { x:0, y:0, rotation:0, scaleX:1, scaleY:1 };
-
+        if(!obj.transformations) {
+            obj.transformations = {};
+            obj.transformations.translate3d = {};
+            obj.transformations.scale3d = {};
+            obj.transformations.rotate = 0;
         }
+        if(/x|y|z/.test(key)) {
+            obj.transformations.translate3d[key] = obj.tweenObj[key];
+        } else if (/scaleX|scaleY|scaleZ/.test(key)) {
+            obj.transformations.scale3d[key] = obj.tweenObj[key];
+        } else if (key === "rotate") {
+            obj.transformations.rotate = obj.tweenObj[key];
+        }
+    }
 
-        obj.transformations[key] = obj.tweenObj[key];
+    function getTransformProps(obj) {
+        var transform = window.getComputedStyle(obj.element).webkitTransform, matrix,
+            array = [];
+        if (transform) {
+            if(!obj.element.getAttribute("data-tr")) {
+                matrix = new WebKitCSSMatrix(transform);
+                array.push(matrix.m41);
+                array.push(matrix.m42);
+                array.push(matrix.m43);
+                array.push(Math.sqrt((matrix.a * matrix.a) + (matrix.c * matrix.c)));
+                array.push(Math.sqrt((matrix.b * matrix.b) + (matrix.d * matrix.d)));
+                array.push(Math.atan2(matrix.b, matrix.a) * (180/Math.PI));
+                obj.element.setAttribute("data-tr", array);
+            }
+        }
     }
 
     function setTransformations(obj) {
-        var translate, scale, rotate;
-        translate = ' translate(' + obj.transformations.x + 'px, ' + obj.transformations.y + 'px)';
-        scale = ' scale(' + obj.transformations.scaleX + ', ' + obj.transformations.scaleY + ')';
-        rotate = ' rotate(' + obj.transformations.rotate + 'deg)';
-        obj.element.style.WebkitTransform = obj.element.style.transform = translate + scale + rotate;
+        var array = obj.element.getAttribute("data-tr").split(","),
+            x = obj.transformations.translate3d.x !== undefined ? obj.transformations.translate3d.x : array[0],
+            y = obj.transformations.translate3d.y !== undefined ? obj.transformations.translate3d.y : array[1],
+            z = obj.transformations.translate3d.z !== undefined ? obj.transformations.translate3d.z : array[2],
+            scaleX = obj.transformations.scale3d.scaleX !== undefined ? obj.transformations.scale3d.scaleX : array[3],
+            scaleY = obj.transformations.scale3d.scaleY !== undefined ? obj.transformations.scale3d.scaleY : array[4],
+            rotate = obj.transformations.rotate !== undefined ? obj.transformations.rotate : array[5];
+
+        translate = ' translate3d(' + x + 'px, ' + y + 'px, ' + z + 'px)';
+        scale = ' scale(' + scaleX + ', ' + scaleY + ')';
+        rotation = ' rotate(' + rotate + 'deg)';
+        obj.element.setAttribute("data-tr", [x, y, z, scaleX, scaleY, rotate]);
+        obj.element.style.transform = translate + scale + rotation;
     }
+
 
     function setCallback(obj) {
         obj.element.addEventListener('webkitTransitionEnd', complete, false);
