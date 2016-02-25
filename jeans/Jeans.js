@@ -130,17 +130,21 @@ var Jeans = (function() {
     }
 
     function getTransformProps(obj) {
-        var transform = window.getComputedStyle(obj.element).webkitTransform, matrix,
-            array = [];
+        var transform, matrix, array = [];
+        try {
+            transform = window.getComputedStyle(obj.element).transform;
+        } catch (error) {
+            transform = window.getComputedStyle(obj.element).webkitTransform;
+        }
         if (transform) {
             if(!obj.element.getAttribute("data-tr")) {
                 matrix = new WebKitCSSMatrix(transform);
-                array.push(matrix.m41);
-                array.push(matrix.m42);
-                array.push(matrix.m43);
-                array.push(Math.sqrt((matrix.a * matrix.a) + (matrix.c * matrix.c)));
-                array.push(Math.sqrt((matrix.b * matrix.b) + (matrix.d * matrix.d)));
-                array.push(Math.atan2(matrix.b, matrix.a) * (180/Math.PI));
+                array.push(transform[4]); //x
+                array.push(transform[5]); //y
+                array.push(transform[6] || 0); //z
+                array.push(Math.sqrt((transform[0] * transform[0]) + (transform[2] * transform[2]))); //scaleX
+                array.push(Math.sqrt((transform[1] * transform[1]) + (transform[3] * transform[3]))); //x
+                array.push(Math.atan2(transform[b, transform[a) * (180/Math.PI)); //rotate
                 obj.element.setAttribute("data-tr", array);
             }
         }
@@ -175,6 +179,34 @@ var Jeans = (function() {
         //obj.element.style.transition = "none";
         executeCallback(obj);
         removeAnimationObject(obj);
+    }
+
+    function decompose3dMatrix(obj) {
+        // todo implement for 2d matrix
+        var rgx = /\(([^)]+)\)/;
+        var match;
+        var matrix;
+        var transform, transforms = [];
+        try {
+            transform = window.getComputedStyle(obj.element).transform;
+        } catch (error) {
+            transform = window.getComputedStyle(obj.element).webkitTransform;
+        }
+        if (transform) {
+            match = transform.match(rgx);
+            matrix = match && match[1];
+            array = matrix.split(",");
+            if(!obj.element.getAttribute("data-tr")) {
+                transforms.push(array[12]); //x
+                transforms.push(array[13]); //y
+                transforms.push(array[14]); //z
+                transforms.push(Math.sqrt((array[0] * array[0]) + (array[1] * array[1]) + (array[2] * array[2]))); //scaleX
+                transforms.push(Math.sqrt((array[4] * array[4]) + (array[5] * array[5]) + (array[6] * array[6]))); //scaleY
+                transforms.push(Math.sqrt((array[8] * array[8]) + (array[9] * array[9]) + (array[10] * array[10]))); //scaleZ
+                transforms.push(Math.atan2(array[1], array[0]) * (180/Math.PI)); //rotate
+                obj.element.setAttribute("data-tr", array);
+            }
+        }
     }
 
     function getAnimationObjByElement(element) {
