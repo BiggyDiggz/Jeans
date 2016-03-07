@@ -1,17 +1,27 @@
 var Jeans = (function() {
 
-    var transformProps = ["x", "y", "scaleX", "scaleY", "rotate"];
+    var transformProps = ["x", "y", "z", "scaleX", "scaleY", "scaleZ", "rotate", "rotateX", "rotateY", "rotateZ", "skewX", "skewY"];
     var timeProps = ["time", "ease", "delay"];
     var callbackProps = ["onEnd", "onEndArgs"];
+    var overwriteTransform = "overwriteTransform";
+    var hardwareAccelerate = "hardwareAccelerate";
     var FRAME_RATE = 33;
     var animationObjects = [];
 
-    function go(element, props) {
-        var obj = { element: element, props: props };
+    function transition(element, props) {
+        var obj = { element: element, props: props, transformations: {} };
+        animationObjects.push(obj);
         parseProperties(obj);
         createTransition(obj);
-        animationObjects.push(obj);
         setTimeout(setProperties, 1, obj);
+        setCallback(obj);
+    }
+
+    function animation(element, keyframes, props) {
+        var obj = { element: element, keyframes: keyframes, props: props };
+        animationObjects.push(obj);
+        parseProperties(obj);
+        createAnimation(obj);
         setCallback(obj);
     }
 
@@ -35,7 +45,7 @@ var Jeans = (function() {
     }
 
     function parseProperties(obj) {
-        var nonTweenProps = timeProps.concat(callbackProps);
+        var nonTweenProps = timeProps.concat(callbackProps, [overwriteTransform, hardwareAccelerate]);
         obj.tweenObj = {};
         for (key in obj.props) {
             if (contains(nonTweenProps, key)) {
@@ -71,6 +81,15 @@ var Jeans = (function() {
         obj.element.style.transitionDelay = delay + "s";
     }
 
+    function createAnimation(obj) {
+        var time = obj.time || 0, delay = obj.delay || 0;
+        obj.element.style.animationName = obj.keyframes;
+        obj.element.style.animationDuration = time + "s";
+        obj.element.style.animationTimingFunction = obj.ease || "linear";
+        obj.element.style.animationDelay = delay + "s";
+        obj.element.style.animationFillMode = "both";
+    }
+
     function getTransitionProperties(obj) {
         var hasTransform = false;
         var properties = [];
@@ -79,6 +98,7 @@ var Jeans = (function() {
             if (contains(transformProps, key)) {
                 hasTransform = true;
             } else {
+                //replace camel case with dashes
                 key = key.replace(/\W+/g, '-').replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
                 properties.push(key);
             }
@@ -92,121 +112,67 @@ var Jeans = (function() {
     }
 
     function setProperties(obj) {
-        var key, matrix;
+        var key;
         for (key in obj.tweenObj) {
             if (!contains(transformProps, key)) {
-                setRegularProps(obj, key);
+                setRegularValues(obj, key);
             } else {
-                setTransformProps(obj, key);
+                setTransformValues(obj, key);
             }
         }
         if (obj.transformations) {
-            getTransformProps(obj);
-            matrix = new WebKitCSSMatrix(window.getComputedStyle(obj.element).webkitTransform);
-            setTransformations(obj, matrix);
+            setTransformations(obj);
         }
     }
 
-    function setRegularProps(obj, key) {
+    function setRegularValues(obj, key) {
         var value = obj.tweenObj[key];
         value += (key !== "opacity") && (key !== "backgroundColor") ? "px" : "";
         obj.element.style[key] = value;
     }
 
-    function setTransformProps(obj, key) {
-        if(!obj.transformations) {
-            obj.transformations = {};
-            obj.transformations.translate3d = {};
-            obj.transformations.scale3d = {};
-            obj.transformations.rotate = 0;
-        }
-        if(/x|y|z/.test(key)) {
-            obj.transformations.translate3d[key] = obj.tweenObj[key];
-        } else if (/scaleX|scaleY|scaleZ/.test(key)) {
-            obj.transformations.scale3d[key] = obj.tweenObj[key];
-        } else if (key === "rotate") {
-            obj.transformations.rotate = obj.tweenObj[key];
-        }
-    }
-
-    function getTransformProps(obj) {
-        var transform, matrix, array = [];
-        try {
-            transform = window.getComputedStyle(obj.element).transform;
-        } catch (error) {
-            transform = window.getComputedStyle(obj.element).webkitTransform;
-        }
-        if (transform) {
-            if(!obj.element.getAttribute("data-tr")) {
-                matrix = new WebKitCSSMatrix(transform);
-                array.push(transform[4]); //x
-                array.push(transform[5]); //y
-                array.push(transform[6] || 0); //z
-                array.push(Math.sqrt((transform[0] * transform[0]) + (transform[2] * transform[2]))); //scaleX
-                array.push(Math.sqrt((transform[1] * transform[1]) + (transform[3] * transform[3]))); //x
-                array.push(Math.atan2(transform[b, transform[a) * (180/Math.PI)); //rotate
-                obj.element.setAttribute("data-tr", array);
-            }
+    function setTransformValues(obj, key) {
+        if(/x|y|scaleX|scaleY|rotate|skewX|skewY/.test(key)) {
+            obj.transformations[key] = obj.tweenObj[key];
         }
     }
 
     function setTransformations(obj) {
-        var array = obj.element.getAttribute("data-tr").split(","),
-            x = obj.transformations.translate3d.x !== undefined ? obj.transformations.translate3d.x : array[0],
-            y = obj.transformations.translate3d.y !== undefined ? obj.transformations.translate3d.y : array[1],
-            z = obj.transformations.translate3d.z !== undefined ? obj.transformations.translate3d.z : array[2],
-            scaleX = obj.transformations.scale3d.scaleX !== undefined ? obj.transformations.scale3d.scaleX : array[3],
-            scaleY = obj.transformations.scale3d.scaleY !== undefined ? obj.transformations.scale3d.scaleY : array[4],
-            rotate = obj.transformations.rotate !== undefined ? obj.transformations.rotate : array[5];
+        var rotate = "", scale = "", skew = "", translate = "";
+        if (obj.overwriteTransform === undefined || obj.overwriteTransform) {
+            var trans = obj.transformations;
+            translate += trans.x !== undefined && trans.x ? 'translateX(' + trans.x + 'px) ' : "";
+            translate += trans.y !== undefined && trans.y ? 'translateY(' + trans.y + 'px) ' : "";
+            rotate += trans.rotate !== undefined && trans.rotate ? 'rotate(' + trans.rotate + 'deg) ' : "";
+            scale += trans.scaleX !== undefined && trans.scaleX ? 'scaleX(' + trans.scaleX + ') ' : "";
+            scale += trans.scaleY !== undefined && trans.scaleY ? 'scaleY(' + trans.scaleY + ') ' : "";
+            skew += trans.skewX !== undefined && trans.skewX ? 'skewX(' + trans.skewX + ') ' : "";
+            skew += trans.skewY !== undefined && trans.skewY ? 'skewY(' + trans.skewY + ') ' : "";
+        }
 
-        translate = ' translate3d(' + x + 'px, ' + y + 'px, ' + z + 'px)';
-        scale = ' scale(' + scaleX + ', ' + scaleY + ')';
-        rotation = ' rotate(' + rotate + 'deg)';
-        obj.element.setAttribute("data-tr", [x, y, z, scaleX, scaleY, rotate]);
-        obj.element.style.transform = translate + scale + rotation;
+        if (obj.hardwareAccelerate !== undefined || obj.hardwareAccelerate) {
+            translate += 'translateZ(0) ';
+        }
+
+        obj.element.style.transform = translate + rotate + scale + skew;
     }
-
 
     function setCallback(obj) {
         obj.element.addEventListener('webkitTransitionEnd', complete, false);
         obj.element.addEventListener('transitionend', complete, false);
+        obj.element.addEventListener('webkitAnimationEnd', complete, false);
+        obj.element.addEventListener('animationend', complete, false);
     }
 
     function complete(event) {
         event.target.removeEventListener('webkitTransitionEnd', complete);
         event.target.removeEventListener('transitionend', complete);
+        event.target.removeEventListener('webkitAnimationEnd', complete);
+        event.target.removeEventListener('animationend', complete);
         var obj = getAnimationObjByElement(event.target);
         //obj.element.style.transition = "none";
         executeCallback(obj);
         removeAnimationObject(obj);
-    }
-
-    function decompose3dMatrix(obj) {
-        // todo implement for 2d matrix
-        var rgx = /\(([^)]+)\)/;
-        var match;
-        var matrix;
-        var transform, transforms = [];
-        try {
-            transform = window.getComputedStyle(obj.element).transform;
-        } catch (error) {
-            transform = window.getComputedStyle(obj.element).webkitTransform;
-        }
-        if (transform) {
-            match = transform.match(rgx);
-            matrix = match && match[1];
-            array = matrix.split(",");
-            if(!obj.element.getAttribute("data-tr")) {
-                transforms.push(array[12]); //x
-                transforms.push(array[13]); //y
-                transforms.push(array[14]); //z
-                transforms.push(Math.sqrt((array[0] * array[0]) + (array[1] * array[1]) + (array[2] * array[2]))); //scaleX
-                transforms.push(Math.sqrt((array[4] * array[4]) + (array[5] * array[5]) + (array[6] * array[6]))); //scaleY
-                transforms.push(Math.sqrt((array[8] * array[8]) + (array[9] * array[9]) + (array[10] * array[10]))); //scaleZ
-                transforms.push(Math.atan2(array[1], array[0]) * (180/Math.PI)); //rotate
-                obj.element.setAttribute("data-tr", array);
-            }
-        }
     }
 
     function getAnimationObjByElement(element) {
@@ -269,7 +235,8 @@ var Jeans = (function() {
     }
 
     return {
-        go: go,
+        transition: transition,
+        animation: animation,
         scrollTo: scrollTo
     }
 }());
