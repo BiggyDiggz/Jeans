@@ -9,9 +9,15 @@ var Jeans = (function() {
 	var animationObjects = [];
 
 	/**
-	 *
-	 * @param element an HTML Div Element
-	 * @param props
+	 * @param {HTMLElement} element
+	 * @param {object} props Transition properties
+	 * @param {number} props.time The duration of the transition in seconds
+	 * @param {number} props.delay A delay in seconds that occurs before the transition starts
+	 * @param {string} props.ease An easing equation applied to the transition
+	 * @param {function} props.onEnd A function that is called when the transition ends
+	 * @param {array} props.onEndArgs An array of parameters applied to the onEnd function
+	 * @param {boolean} props.hardwareAccelerated A boolean value that turns on hardwareAcceleration by adding translateZ to the transition transformation
+	 * @param {number} props.x props.y props.left, props.opacity etc... CSS values to transition to
 	 */
 	function transition(element, props) {
 		var obj = { element: element, props: props, transformations: {} };
@@ -23,10 +29,14 @@ var Jeans = (function() {
 	}
 
 	/**
-	 *
-	 * @param element an HTML Div Element
-	 * @param keyframes
-	 * @param props
+	 * @param {HTMLElement} element
+	 * @param {string} keyframes A name of a keyframe animation
+	 * @param {object} props Animation properties
+	 * @param {number} props.time The duration of the animation in seconds
+	 * @param {number} props.delay A delay in seconds that occurs before the animation starts
+	 * @param {string} props.ease An easing equation applied to the animation
+	 * @param {function} props.onEnd A function that is called when the animation ends
+	 * @param {array} props.onEndArgs An array of parameters applied to the onEnd function
 	 */
 	function animation(element, keyframes, props) {
 		var obj = { element: element, keyframes: keyframes, props: props };
@@ -37,9 +47,12 @@ var Jeans = (function() {
 	}
 
 	/**
-	 *
-	 * @param element
-	 * @param props
+	 * @param {HTMLElement} element
+	 * @param {object} props Scroll animation properties
+	 * @param {number} props.time The duration of the transition in seconds
+	 * @param {number} props.delay A delay in seconds that occurs before the scroll starts
+	 * @param {function} props.onEnd A function that is called when the scrolling animation ends
+	 * @param {array} props.onEndArgs An array of parameters applied to the onEnd function
 	 */
 	function scrollTo(element, props) {
 		var obj = { element: element, props: props, step: 0 };
@@ -178,7 +191,6 @@ var Jeans = (function() {
 		obj.element.addEventListener("transitionend", complete, false);
 		obj.element.addEventListener("webkitAnimationEnd", complete, false);
 		obj.element.addEventListener("animationend", complete, false);
-
 	}
 
 	function complete(event) {
