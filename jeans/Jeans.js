@@ -1,6 +1,6 @@
 var Jeans = (function() {
 
-    var transformProps = ["x", "y", "scaleX", "scaleY", "rotate", "rotateX", "rotateY", "rotateZ", "skewX", "skewY"];
+    var transformProps = ["x", "y", "scaleX", "scaleY", "rotate", "rotateX", "rotateY", "skewX", "skewY"];
     var timeProps = ["time", "ease", "delay"];
     var callbackProps = ["onEnd", "onEndArgs"];
     var overwriteTransform = "overwriteTransform";
