@@ -1,6 +1,6 @@
 var Jeans = (function() {
 
-    var transformProps = ["x", "y", "z", "scaleX", "scaleY", "scaleZ", "rotate", "rotateX", "rotateY", "rotateZ", "skewX", "skewY"];
+    var transformProps = ["x", "y", "scaleX", "scaleY", "rotate", "rotateX", "rotateY", "rotateZ", "skewX", "skewY"];
     var timeProps = ["time", "ease", "delay"];
     var callbackProps = ["onEnd", "onEndArgs"];
     var overwriteTransform = "overwriteTransform";
@@ -141,36 +141,36 @@ var Jeans = (function() {
         var rotate = "", scale = "", skew = "", translate = "";
         if (obj.overwriteTransform === undefined || obj.overwriteTransform) {
             var trans = obj.transformations;
-            translate += trans.x !== undefined && trans.x ? 'translateX(' + trans.x + 'px) ' : "";
-            translate += trans.y !== undefined && trans.y ? 'translateY(' + trans.y + 'px) ' : "";
-            rotate += trans.rotate !== undefined && trans.rotate ? 'rotate(' + trans.rotate + 'deg) ' : "";
-            scale += trans.scaleX !== undefined && trans.scaleX ? 'scaleX(' + trans.scaleX + ') ' : "";
-            scale += trans.scaleY !== undefined && trans.scaleY ? 'scaleY(' + trans.scaleY + ') ' : "";
-            skew += trans.skewX !== undefined && trans.skewX ? 'skewX(' + trans.skewX + ') ' : "";
-            skew += trans.skewY !== undefined && trans.skewY ? 'skewY(' + trans.skewY + ') ' : "";
+            translate += trans.x !== undefined && trans.x ? "translateX(" + trans.x + "px) " : "";
+            translate += trans.y !== undefined && trans.y ? "translateY(" + trans.y + "px) " : "";
+            rotate += trans.rotate !== undefined && trans.rotate ? "rotate(" + trans.rotate + "deg) " : "";
+            scale += trans.scaleX !== undefined && trans.scaleX ? "scaleX(" + trans.scaleX + ") " : "";
+            scale += trans.scaleY !== undefined && trans.scaleY ? "scaleY(" + trans.scaleY + ") " : "";
+            skew += trans.skewX !== undefined && trans.skewX ? "skewX(" + trans.skewX + ") " : "";
+            skew += trans.skewY !== undefined && trans.skewY ? "skewY(" + trans.skewY + ") " : "";
         }
 
         if (obj.hardwareAccelerate !== undefined || obj.hardwareAccelerate) {
-            translate += 'translateZ(0) ';
+            translate += "translateZ(0) ";
         }
 
         obj.element.style.transform = translate + rotate + scale + skew;
     }
 
     function setCallback(obj) {
-        obj.element.addEventListener('webkitTransitionEnd', complete, false);
-        obj.element.addEventListener('transitionend', complete, false);
-        obj.element.addEventListener('webkitAnimationEnd', complete, false);
-        obj.element.addEventListener('animationend', complete, false);
+        obj.element.addEventListener("webkitTransitionEnd", complete, false);
+        obj.element.addEventListener("transitionend", complete, false);
+        obj.element.addEventListener("webkitAnimationEnd", complete, false);
+        obj.element.addEventListener("animationend", complete, false);
+
     }
 
     function complete(event) {
-        event.target.removeEventListener('webkitTransitionEnd', complete);
-        event.target.removeEventListener('transitionend', complete);
-        event.target.removeEventListener('webkitAnimationEnd', complete);
-        event.target.removeEventListener('animationend', complete);
+        event.target.removeEventListener("webkitTransitionEnd", complete);
+        event.target.removeEventListener("transitionend", complete);
+        event.target.removeEventListener("webkitAnimationEnd", complete);
+        event.target.removeEventListener("animationend", complete);
         var obj = getAnimationObjByElement(event.target);
-        //obj.element.style.transition = "none";
         executeCallback(obj);
         removeAnimationObject(obj);
     }
