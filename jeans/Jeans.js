@@ -10,7 +10,7 @@ var Jeans = (function() {
 
 	/**
      *
-     * @param element
+     * @param element an HTML Div Element
      * @param props
      */
     function transition(element, props) {
@@ -24,7 +24,7 @@ var Jeans = (function() {
 
 	/**
 	 *
-     * @param element
+     * @param element an HTML Div Element
      * @param keyframes
      * @param props
      */
