@@ -8,6 +8,11 @@ var Jeans = (function() {
     var FRAME_RATE = 33;
     var animationObjects = [];
 
+	/**
+     *
+     * @param element
+     * @param props
+     */
     function transition(element, props) {
         var obj = { element: element, props: props, transformations: {} };
         animationObjects.push(obj);
@@ -17,6 +22,12 @@ var Jeans = (function() {
         setCallback(obj);
     }
 
+	/**
+	 *
+     * @param element
+     * @param keyframes
+     * @param props
+     */
     function animation(element, keyframes, props) {
         var obj = { element: element, keyframes: keyframes, props: props };
         animationObjects.push(obj);
@@ -25,6 +36,11 @@ var Jeans = (function() {
         setCallback(obj);
     }
 
+	/**
+	 *
+     * @param element
+     * @param props
+     */
     function scrollTo(element, props) {
         var obj = { element: element, props: props, step: 0 };
         setScrollProperties(obj);
