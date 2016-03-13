@@ -15,7 +15,7 @@ Creates a scroll animation
 ___
 
 ###Method Detail
-####**transition()**#### method<br>
+####**transition()**####
 function transition(element: HTMLDomElement, properties: Object): void<br>
 **parameters**<br>
 element: HTMLDomElement -- A DOM Element to apply a transition to<br>
