@@ -15,9 +15,9 @@ Creates a scroll animation
 ___
 
 ###Method Detail
-**transition**() method<br>
+####**transition()***#### method<br>
 function transition(element: HTMLDomElement, properties: Object): void<br>
-**Parameters**<br>
+**parameters**<br>
 element: HTMLDomElement -- A DOM Element to apply a transition to<br>
 properties: Object -- An object that contains key value pairs about the transition<br>
 
@@ -104,7 +104,7 @@ properties: Object -- An object that contains key value pairs about the transiti
 > 
 > onEndArgs
 > 
-> - *onEndArgs* - An array of arguments for the *onEnd* function <br>
+> - *onEndArgs* - An array of arguments for the *onEnd* callback <br>
 > `Jeans.transition(element, { onEnd: myCallback, onEndArgs: ['foo', 'bar'] })`
 
 Example Usage
@@ -122,7 +122,7 @@ Jeans.transition(element, {
 ```
 
 <br>
-**animation**() method<br>
+####**animation()**#### method<br>
 function animation(element: HTMLDomElement, keyframes: String, properties: Object): void<br>
 **Parameters**<br>
 element: HTMLDomElement -- A DOM Element to apply an animation to<br>
@@ -168,7 +168,7 @@ Jeans.animation(element, myKeframes, {
 ```
 
 <br>
-**scrollTo**() method<br>
+####**scrollTo()**##### method<br>
 function scrollTo(element: HTMLDomElement, properties: Object): void<br>
 **Parameters**<br>
 element: HTMLDomElement -- A DOM Element to apply a scroll to<br>
