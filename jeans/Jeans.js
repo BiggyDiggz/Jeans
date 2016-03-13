@@ -1,12 +1,61 @@
+/*jslint         browser : true, continue : true,
+ devel  : true, indent  : 2,    maxerr   : 50,
+ newcap : true, nomen   : true, plusplus : true,
+ regexp : true, sloppy  : true, vars     : false,
+ white  : true
+ */
+/*global $, Jeans */
+
 var Jeans = (function() {
 
-	var transformProps = ["x", "y", "scaleX", "scaleY", "rotate", "rotateX", "rotateY", "skewX", "skewY"];
+	var FRAME_RATE = 33;
+
+	var transformProps = ["x", "y", "z", "scaleX", "scaleY", "scaleZ", "rotate", "rotateX", "rotateY", "rotateZ", "skewX", "skewY"];
+	var filters = ["blur", "brightness", "contrast", "dropShadow", "grayscale", "hueRotate", "invert", "saturate", "sepia"];
 	var timeProps = ["time", "ease", "delay"];
 	var callbackProps = ["onEnd", "onEndArgs"];
 	var overwriteTransform = "overwriteTransform";
 	var hardwareAccelerate = "hardwareAccelerate";
-	var FRAME_RATE = 33;
 	var animationObjects = [];
+
+	/* Matthew Lein's easing functions
+	 * http://matthewlein.com/ceaser/
+	 * @matthewlein
+	 */
+	var eases = {}, cb = 'cubic-bezier', qd = 'quad-', cu = 'cubic-', qt = 'quart-',
+		qn = 'quint-', si = 'sine-', ex = 'expo-', ci = 'circ-',
+		bk= 'back-', ei = 'ease-in', o ='-out', eo = 'ease-out', eio='ease-in-out';
+	eases.linear = 'linear';
+	eases[ei] = ei; //ease-in
+	eases[eo] = eo; //ease-out
+	eases[eio] = eio; //ease-in-out
+
+	eases[qd + ei] = cb + '(0.550, 0.085, 0.680, 0.530)'; //quad-ease-in
+	eases[cu + ei] = cb + '(0.550, 0.055, 0.675, 0.190)'; //cubic-ease-in
+	eases[qt + ei] = cb + '(0.895, 0.030, 0.685, 0.220)'; //quart-ease-in
+	eases[qn + ei] = cb + '(0.755, 0.050, 0.855, 0.060)'; //quint-ease-in
+	eases[si + ei] = cb + '(0.470, 0, 0.745, 0.715)'; //sine-ease-in
+	eases[ex + ei] = cb + '(0.950, 0.050, 0.795, 0.035)'; //expo-ease-in
+	eases[ci + ei] = cb + '(0.600, 0.040, 0.980, 0.335)'; //circ-ease-in
+	eases[bk + ei] = cb + '(0.600, -0.280, 0.735, 0.045)'; //back-ease-in
+
+	eases[qd + eo] = cb + '(0.250, 0.460, 0.450, 0.940)'; //quad-ease-out
+	eases[cu + eo] = cb + '(0.215, 0.610, 0.355, 1)'; //cubic-ease-out
+	eases[qt + eo] = cb + '(0.165, 0.840, 0.440, 1)'; //quart-ease-out
+	eases[qn + eo] = cb + '(0.230, 1, 0.320, 1)'; //quint-ease-out
+	eases[si + eo] = cb + '(0.390, 0.575, 0.565, 1)'; //sine-ease-out
+	eases[ex + eo] = cb + '(0.190, 1, 0.220, 1)'; //expo-ease-out
+	eases[ci + eo] = cb + '(0.075, 0.820, 0.165, 1)'; //circ-ease-out
+	eases[bk + eo] = cb + '(0.175, 0.885, 0.320, 1.275)'; //back-ease-out
+
+	eases[qd + eio] = cb + '(0.455, 0.030, 0.515, 0.955)'; //quad-ease-in-out
+	eases[cu + eio] = cb + '(0.645, 0.045, 0.355, 1)'; //cubic-ease-in-out
+	eases[qt + eio] = cb + '(0.770, 0, 0.175, 1)'; //quart-ease-in-out
+	eases[qn + eio] = cb + '(0.860, 0, 0.070, 1)'; //quint-ease-in-out
+	eases[si + eio] = cb + '(0.445, 0.050, 0.550, 0.950)'; //sine-ease-in-out
+	eases[ex + eio] = cb + '(1, 0, 0, 1)'; //expo-ease-in-out
+	eases[ci + eio] = cb + '(0.785, 0.135, 0.150, 0.860)'; //circ-ease-in-out
+	eases[bk + eio] = cb + '(0.680, -0.550, 0.265, 1.550)'; //back-ease-in-out
 
 	/**
 	 * @param {HTMLElement} element
@@ -121,32 +170,40 @@ var Jeans = (function() {
 
 	function getTransitionProperties(obj) {
 		var hasTransform = false;
+		var hasFilter = false;
 		var properties = [];
 
 		for (var key in obj) {
 			if (contains(transformProps, key)) {
 				hasTransform = true;
-			} else {
-				//replace camel case with dashes
-				key = key.replace(/\W+/g, '-').replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
-				properties.push(key);
+			} else if (contains(filters, key)) {
+				hasFilter = true;
+			}
+			else {
+				properties.push(camelCaseToDash(key));
 			}
 		}
 
 		if (hasTransform) {
 			properties.push("transform");
 		}
-
+		if (hasFilter) {
+			properties.push("-webkit-filter");
+			properties.push("filter");
+		}
+		
 		return properties.join(", ");
 	}
 
 	function setProperties(obj) {
 		var key;
 		for (key in obj.tweenObj) {
-			if (!contains(transformProps, key)) {
-				setRegularValues(obj, key);
-			} else {
+			if (contains(transformProps, key)) {
 				setTransformValues(obj, key);
+			} else if (contains(filters, key)) {
+				setFilterValues(obj, key);
+			} else {
+				setRegularValues(obj, key);
 			}
 		}
 		if (obj.transformations) {
@@ -156,12 +213,26 @@ var Jeans = (function() {
 
 	function setRegularValues(obj, key) {
 		var value = obj.tweenObj[key];
-		value += (key !== "opacity") && (key !== "backgroundColor") ? "px" : "";
+		if(value.toString().indexOf("%") === -1) {
+			value += (key !== "opacity") && (key !== "backgroundColor") && (key !== "boxShadow") ? "px" : "";
+		}
 		obj.element.style[key] = value;
 	}
 
+	function setFilterValues(obj, key) {
+		var value = obj.tweenObj[key];
+		if (key === "hueRotate") {
+			value = "(" + value + "deg)";
+		} else {
+			value = key === "blur" ? "(" + value + "px)" : "(" + value + "%)";
+		}
+		key = camelCaseToDash(key);
+		obj.element.style.webkitFilter = key + value;
+		obj.element.style.filter = key + value;
+	}
+
 	function setTransformValues(obj, key) {
-		if(/x|y|scaleX|scaleY|rotate|skewX|skewY/.test(key)) {
+		if(/x|y|z|scaleX|scaleY|scaleZ|rotate|rotateX|rotateY|rotateZ|skewX|skewY/.test(key)) {
 			obj.transformations[key] = obj.tweenObj[key];
 		}
 	}
@@ -172,14 +243,19 @@ var Jeans = (function() {
 			var trans = obj.transformations;
 			translate += trans.x !== undefined && trans.x ? "translateX(" + trans.x + "px) " : "";
 			translate += trans.y !== undefined && trans.y ? "translateY(" + trans.y + "px) " : "";
+			translate += trans.z !== undefined && trans.z ? "translateZ(" + trans.z + "px) " : "";
 			rotate += trans.rotate !== undefined && trans.rotate ? "rotate(" + trans.rotate + "deg) " : "";
+			rotate += trans.rotateX !== undefined && trans.rotateX ? "rotateX(" + trans.rotateX + "deg) " : "";
+			rotate += trans.rotateY !== undefined && trans.rotateY ? "rotate(" + trans.rotateY + "deg) " : "";
+			rotate += trans.rotateZ !== undefined && trans.rotateZ ? "rotate(" + trans.rotateZ + "deg) " : "";
 			scale += trans.scaleX !== undefined && trans.scaleX ? "scaleX(" + trans.scaleX + ") " : "";
 			scale += trans.scaleY !== undefined && trans.scaleY ? "scaleY(" + trans.scaleY + ") " : "";
-			skew += trans.skewX !== undefined && trans.skewX ? "skewX(" + trans.skewX + ") " : "";
-			skew += trans.skewY !== undefined && trans.skewY ? "skewY(" + trans.skewY + ") " : "";
+			scale += trans.scaleZ !== undefined && trans.scaleZ ? "scaleZ(" + trans.scaleZ + ") " : "";
+			skew += trans.skewX !== undefined && trans.skewX ? "skewX(" + trans.skewX + "deg) " : "";
+			skew += trans.skewY !== undefined && trans.skewY ? "skewY(" + trans.skewY + "deg) " : "";
 		}
 
-		if (obj.hardwareAccelerate !== undefined || obj.hardwareAccelerate) {
+		if ((obj.hardwareAccelerate !== undefined || obj.hardwareAccelerate) && trans.z === undefined) {
 			translate += "translateZ(0) ";
 		}
 
@@ -237,6 +313,10 @@ var Jeans = (function() {
 			}
 		}
 		return false;
+	}
+
+	function camelCaseToDash(value) {
+		return value.replace(/\W+/g, '-').replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
 	}
 
 	/**  Scroll Easing
