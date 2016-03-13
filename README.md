@@ -30,12 +30,13 @@ properties: Object -- An object that contains key value pairs about the transiti
 > 
 > Any animatable CSS Property - *left, top, width, height, etc..*
 > 
-> - CSS properties with dashes in them are camelCased e.g. *background-color* becomes *backgroundColor*
-> - Pixel values are numbers so omit "px" <br>
+> - CSS properties with dashes are camel cased e.g. *background-color* becomes *backgroundColor*
+> - Pixel values are numbers. Omit "px" <br>
 > `Jeans.transition(element, { left: 50 })`
 > - Percentage values are strings <br>
 > `Jeans.transition(element, { left: "100%" })`
 > - box-shadow values are strings
+> `Jeans.transition(element, { dropShadow: "8px 8px 5px rgba(0, 0, 0, 0.25)" })`
 >
 > Transforms - *x, y, z, rotate, rotateX, rotateZ, scaleX, scaleY, scaleZ, skewX, skewY*
 > 
