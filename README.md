@@ -18,23 +18,22 @@ Jeans.transition(element, {
 ); 
 ```
 ###Public Methods
-**transition**(element: HTMLDomElement, properties: Object): void
+**transition**(element: HTMLDomElement, properties: Object): void<br>
 Creates a css transition
 ____
-**animation**(element: HTMLDomElement, keyframes: String, properties: Object): void
+**animation**(element: HTMLDomElement, keyframes: String, properties: Object): void<br>
 Creates a css animation
 ____
-**scrollTo**(element: HTMLDomElement, properties: Object): void
+**scrollTo**(element: HTMLDomElement, properties: Object): void<br>
 Creates a scroll animation
 ___
 
 ###Method Detail
-**transition**() method
-function transition(element: HTMLDomElement, properties: Object): void
-Creates a CSS Transition
-**Parameters**
-element: HTMLDomElement -- A DOM Element to apply a transition to
-properties: Object -- An object that contains key value pairs about the transition
+**transition**() method<br>
+function transition(element: HTMLDomElement, properties: Object): void<br>
+**Parameters**<br>
+element: HTMLDomElement -- A DOM Element to apply a transition to<br>
+properties: Object -- An object that contains key value pairs about the transition<br>
 
 > **Properties May Contain:**
 > Duration
@@ -120,13 +119,12 @@ properties: Object -- An object that contains key value pairs about the transiti
 > - *onEndArgs* - An array of arguments for the *onEnd* function
 > `Jeans.transition(element, { onEnd: myCallback, onEndArgs: ['foo', 'bar'] })`
 
-
-**animation**() method
-function animation(element: HTMLDomElement, keyframes: String, properties: Object): void
-Creates a CSS Animation
-**Parameters**
-element: HTMLDomElement -- A DOM Element to apply an animation to
-keyframes: String -- CSS keyframes to add to the element
+<br>
+**animation**() method<br>
+function animation(element: HTMLDomElement, keyframes: String, properties: Object): void<br>
+**Parameters**<br>
+element: HTMLDomElement -- A DOM Element to apply an animation to<br>
+keyframes: String -- CSS keyframes to add to the element<br>
 properties: Object -- An object that contains key value pairs about the animation
 > **Properties May Contain:**
 > Duration
@@ -155,13 +153,12 @@ properties: Object -- An object that contains key value pairs about the animatio
 > - *onEndArgs* - an array of arguments for the *onEnd* function
 > `Jeans.animation(element, myKeyframes, { onEnd: myCallback, onEndArgs: ['foo', 'bar'] })`
 
-
-**scrollTo**() method
-function scrollTo(element: HTMLDomElement, properties: Object): void
-Scrolls an element
-**Parameters**
-element: HTMLDomElement -- A DOM Element to apply a scroll to
-properties: Object -- An object that contains key value pairs about the scroll animation
+<br>
+**scrollTo**() method<br>
+function scrollTo(element: HTMLDomElement, properties: Object): void<br>
+**Parameters**<br>
+element: HTMLDomElement -- A DOM Element to apply a scroll to<br>
+properties: Object -- An object that contains key value pairs about the scroll animation<br>
 > **Properties May Contain:**
 > Duration
 > 
