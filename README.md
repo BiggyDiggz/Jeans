@@ -6,13 +6,13 @@ A Javascript engine for animating neat stuff.
 ###Public Methods
 **transition**(element: HTMLDomElement, properties: Object): void<br>
 Creates a css transition
-____
+
 **animation**(element: HTMLDomElement, keyframes: String, properties: Object): void<br>
 Creates a css animation
-____
+
 **scrollTo**(element: HTMLDomElement, properties: Object): void<br>
 Creates a scroll animation
-___
+
 
 ###Method Detail
 ####**transition()**####
