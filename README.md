@@ -25,8 +25,8 @@ properties: Object -- An object that contains key value pairs about the transiti
 >
 > Duration
 > 
-> - *time* - the duration of the transition in seconds <br>
-> `Jeans.transition(element, { time: 0.5 })`
+> - *duration* - the duration of the transition in seconds <br>
+> `Jeans.transition(element, { duration: 0.5 })`
 > 
 > Any animatable CSS Property - *left, top, width, height, etc..*
 > 
@@ -110,7 +110,7 @@ properties: Object -- An object that contains key value pairs about the transiti
 Example Usage
 ```javascript
 Jeans.transition(element, { 
-  time: 0.5
+  duration: 0.5
 	x:500, 
 	blur: 5,
 	ease:'quad-ease-in-out', 
@@ -131,8 +131,8 @@ properties: Object -- An object that contains key value pairs about the animatio
 > **Properties May Contain:** <br>
 > Duration
 > 
-> - *time* - the duration of the animation in seconds <br>
-> `Jeans.animation(element, myKeyframes, { time: 0.5 })`
+> - *duration* - the duration of the animation in seconds <br>
+> `Jeans.animation(element, myKeyframes, { duration: 0.5 })`
 > 
 > Timing Function
 > 
@@ -158,7 +158,7 @@ properties: Object -- An object that contains key value pairs about the animatio
 Example Usage
 ```javascript
 Jeans.animation(element, myKeframes, { 
-    time: 0.25, 
+    duration: 0.25, 
     ease: "sine-ease-in", 
     delay: 0.5,
     onEnd:myFunction, 
@@ -176,8 +176,8 @@ properties: Object -- An object that contains key value pairs about the scroll a
 > **Properties May Contain:** <br>
 > Duration
 > 
-> - *time* - the duration of the scroll in seconds <br>
-> `Jeans.scrollTo(element, { time: 0.5 })`
+> - *duration* - the duration of the scroll in seconds <br>
+> `Jeans.scrollTo(element, { duration: 0.5 })`
 > 
 > ScrollTop
 > 
@@ -202,7 +202,7 @@ properties: Object -- An object that contains key value pairs about the scroll a
 Example Usage
 ```javascript
 Jeans.transition(element, { 
-    time: 0.5
+    duration: 0.5
     top: 0,
     onEnd:myFunction, 
     onEndArgs:['foo','bar'] 
