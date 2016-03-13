@@ -28,7 +28,7 @@ var Jeans = (function() {
 
 	var transformProps = ["x", "y", "z", "scaleX", "scaleY", "scaleZ", "rotate", "rotateX", "rotateY", "rotateZ", "skewX", "skewY"];
 	var filters = ["blur", "brightness", "contrast", "dropShadow", "grayscale", "hueRotate", "invert", "saturate", "sepia"];
-	var timeProps = ["time", "ease", "delay"];
+	var timeProps = ["duration", "ease", "delay"];
 	var callbackProps = ["onEnd", "onEndArgs"];
 	var overwriteTransform = "overwriteTransform";
 	var hardwareAccelerate = "hardwareAccelerate";
@@ -76,7 +76,7 @@ var Jeans = (function() {
 	/**
 	 * @param {HTMLElement} element
 	 * @param {object} props Transition properties
-	 * @param {number} props.time The duration of the transition in seconds
+	 * @param {number} props.duration The duration of the transition in seconds
 	 * @param {number} props.delay A delay in seconds that occurs before the transition starts
 	 * @param {string} props.ease An easing equation applied to the transition
 	 * @param {function} props.onEnd A function that is called when the transition ends
@@ -97,7 +97,7 @@ var Jeans = (function() {
 	 * @param {HTMLElement} element
 	 * @param {string} keyframes A name of a keyframe animation
 	 * @param {object} props Animation properties
-	 * @param {number} props.time The duration of the animation in seconds
+	 * @param {number} props.duration The duration of the animation in seconds
 	 * @param {number} props.delay A delay in seconds that occurs before the animation starts
 	 * @param {string} props.ease An easing equation applied to the animation
 	 * @param {function} props.onEnd A function that is called when the animation ends
@@ -114,7 +114,8 @@ var Jeans = (function() {
 	/**
 	 * @param {HTMLElement} element
 	 * @param {object} props Scroll animation properties
-	 * @param {number} props.time The duration of the transition in seconds
+	 * @param {number} props.duration The duration of the transition in seconds
+	 * @param {number} props.top The end scroll position of the element
 	 * @param {number} props.delay A delay in seconds that occurs before the scroll starts
 	 * @param {function} props.onEnd A function that is called when the scrolling animation ends
 	 * @param {array} props.onEndArgs An array of parameters applied to the onEnd function
@@ -135,7 +136,7 @@ var Jeans = (function() {
 	function setScrollProperties(obj) {
 		obj.beginTop = obj.element.scrollTop;
 		obj.change = obj.props.top - obj.beginTop;
-		obj.props.time = obj.props.time * 1000;
+		obj.props.duration = obj.props.duration * 1000;
 	}
 
 	function parseProperties(obj) {
@@ -151,7 +152,7 @@ var Jeans = (function() {
 	}
 
 	function animateScroll(obj) {
-		var totalSteps = obj.props.time / FRAME_RATE;
+		var totalSteps = obj.props.duration / FRAME_RATE;
 		var top = easeOutExpo(obj.step++, obj.beginTop, obj.change, totalSteps);
 		obj.element.scrollTop = top;
 		if (obj.step >= totalSteps) {
@@ -168,18 +169,18 @@ var Jeans = (function() {
 	}
 
 	function createTransition(obj) {
-		var time = obj.time || 0, delay = obj.delay || 0;
+		var duration = obj.duration || 0, delay = obj.delay || 0;
 		var ease = obj.ease || "linear";
 		obj.element.style.transitionProperty = getTransitionProperties(obj.tweenObj);
-		obj.element.style.transitionDuration = time + "s";
+		obj.element.style.transitionDuration = duration + "s";
 		obj.element.style.transitionTimingFunction = eases[ease] || ease;
 		obj.element.style.transitionDelay = delay + "s";
 	}
 
 	function createAnimation(obj) {
-		var time = obj.time || 0, delay = obj.delay || 0;
+		var duration = obj.duration || 0, delay = obj.delay || 0;
 		obj.element.style.animationName = obj.keyframes;
-		obj.element.style.animationDuration = time + "s";
+		obj.element.style.animationDuration = duration + "s";
 		obj.element.style.animationTimingFunction = obj.ease || "linear";
 		obj.element.style.animationDelay = delay + "s";
 		obj.element.style.animationFillMode = "both";
