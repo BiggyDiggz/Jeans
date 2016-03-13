@@ -37,10 +37,10 @@ Type: Object
   -Place quotation marks around box-shadow values e.g. boxShadow: "0px 0px 5px 1px rgba(0,0,0,0.39)"
   **Transforms**
   x, y, z, rotate, rotateX, rotateZ, scaleX, scaleY, scaleZ, skewX, skewY
-  -Translation and scaling are in pixel units. Omit "px" when assigning a translation or scale
-  -Rotations and skews are in degrees. Omit "deg" when assigning a rotation or skew value
+  -Translation and scaling are in pixel units. Omit "px" when assigning a translation or scale.
+  -Rotations and skews are in degrees. Omit "deg" when assigning a rotation or skew value.
   **Filters**
-  blur, brightness, contrast, dropShadow, grayscale, hueRotate, invert, saturate, sepia
+  blur, brightness, contrast, dropShadow, grayscale, hueRotate, invert, saturate, sepia.
   -Omit "px", "%", and "deg" when assigning values to filters e.g. blur: 5, contrast: 400.
   **Time**
   The duration of the transition in seconds. 
