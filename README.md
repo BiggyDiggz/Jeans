@@ -1,9 +1,11 @@
-# Jeans: 
+Jeans
+===================
 
-##Javascript engine for animating neat stuff
+A Javascript engine for animating neat stuff.
 
-##### Example Usage
-```
+
+Example Usage
+```javascript
 Jeans.transition(element, { 
   time: 0.5
 	x:500, 
@@ -13,80 +15,144 @@ Jeans.transition(element, {
 	onEnd:myFunction, 
 	onEndArgs:['foo','bar'] 
 	}
-);
-
+); 
 ```
-## Methods
+###Public Methods
+**transition**(element: HTMLDomElement, properties: Object): void
+Creates a css transition
+____
+**animation**(element: HTMLDomElement, keyframes: String, properties: Object): void
+Creates a css animation
+____
+**scrollTo**(element: HTMLDomElement, properties: Object): void
+Creates a scroll animation
+___
 
-### **transition()**
+###Method Detail
+**transition**() method
+function transition(element: HTMLDomElement, properties: Object): void
+Creates a CSS Transition
+**Parameters**
+element: HTMLDomElement -- A DOM Element to apply a transition to
+properties: Object -- An object that contains key value pairs about the transition
 
-function transition(target, properties);  
-creates a css transition
+> **Properties May Contain:**
+> Duration
+> 
+> - *time* - the duration of the transition in seconds
+> `Jeans.transition(element, { time: 0.5 })`
+> 
+> Any animatable CSS Property - *left, top, width, height, etc..*
+> 
+> - CSS properties with dashes in them are camelCased e.g. *background-color* becomes *backgroundColor*
+> - Pixel values are numbers so omit "px"  
+> `Jeans.transition(element, { left: 50 })`
+> - Percentage values are strings
+> `Jeans.transition(element, { left: "100%" })`
+> - box-shadow values are strings
 
-**target**  
-Type: DOM Element  
-A DOM element to apply a transition to.
+> Transforms - *x, y, z, rotate, rotateX, rotateZ, scaleX, scaleY, scaleZ, skewX, skewY*
+> 
+> - Translations and scaling values are numbers e.g.
+> `Jeans.transition(element, { x: 50 scaleX: 1.2 })`
+> - Rotations and skews are in degrees. Omit "deg" when assigning a rotation or skew value.
+> `Jeans.transition(element, { rotate: 30 })`
 
-**properties**  
-Type: Object
-  **CSS properties**
-  Any animatable CSS property
-  -CSS properties with dashes in them are camelCased e.g. background-color becomes backgroundColor.
-  -Pixel values are numbers so omit "px" e.g. x: 200.
-  -Percentage values are strings e.g. width: "100%".
-  -Place quotation marks around box-shadow values e.g. boxShadow: "0px 0px 5px 1px rgba(0,0,0,0.39)"
-  **Transforms**
-  x, y, z, rotate, rotateX, rotateZ, scaleX, scaleY, scaleZ, skewX, skewY
-  -Translation and scaling are in pixel units. Omit "px" when assigning a translation or scale.
-  -Rotations and skews are in degrees. Omit "deg" when assigning a rotation or skew value.
-  **Filters**
-  blur, brightness, contrast, dropShadow, grayscale, hueRotate, invert, saturate, sepia.
-  -Omit "px", "%", and "deg" when assigning values to filters e.g. blur: 5, contrast: 400.
-  **Time**
-  The duration of the transition in seconds. 
-  The value is a number e.g. time: 0.5.
-	**Ease** (default: Linear)  
-	A timing function.
-	The value is a string e.g. "cubic-bezier(1,1,1,1)".  
-	Add any easing function or use a built in one
-		-"ease-in"  
-    -"ease-out"  
-    -"ease-in-out"  
-		-"quad-ease-in"  
-		-"quad-ease-out"  
-		-"quad-ease-in-out"  
-		-"cubic-ease-in"  
-		-"cubic-ease-out"  
-		-"cubic-ease-in-out"  
-		-"quint-ease-in"  
-		-"quint-ease-out"  
-		-"quint-ease-in-out"  
-		-"quart-ease-in"  
-		-"quart-ease-out"  
-		-"quart-ease-in-out"  
-		-"sine-ease-in"  
-		-"sine-ease-out"  
-		-"sine-ease-in-out"  
-		-"expo-ease-in"  
-		-"expo-ease-out"  
-		-"expo-ease-in-out"  
-		-"circ-ease-in"  
-    -"circ-ease-out"  
-    -"circ-ease-in-out"  
-    -"back-ease-in"  
-    -"back-ease-out"  
-    -"back-ease-in-out"  
-  **delay**  
-  A delay in seconds before the transition begins.
-  The value is a number e.g. delay: 0.2.
-	**OnEnd**  
-	Type:Function  
-	A function to be called on complete  
-	**OnEndArgs**  
-	Type:Array  
-	An array of arguments for the complete function  
+> Filters - *blur, brightness, contrast, dropShadow, grayscale, hueRotate, invert, saturate, sepia*
+> 
+> - Omit "px", "%", and "deg" when assigning values to filters 
+> `Jeans.transition(element, { blur: 5, brightness: 200 })`
+> - blur is a pixel value
+> - brightness is a percentage value
+> - contrast is a percentage value
+> - dropShadow is a pixel value
+> - grayscale is a percentage value
+> - hueRotate is in degrees
+> - invert is a percentage value
+> - saturate is a percentage value
+> - sepia is a percentage value
+> 
+> Timing Function
+> 
+> - *ease* - the value is a string
+> `Jeans.transition(element,{ease:"cubic-bezier(1,1,1,1)"})`
+> - Jeans comes with several timing functions
+ >-"ease-in"  
+ -"ease-out"  
+ -"ease-in-out"  
+-"quad-ease-in"  
+-"quad-ease-out"  
+-"quad-ease-in-out"  
+-"cubic-ease-in"  
+-"cubic-ease-out"  
+-"cubic-ease-in-out"  
+-"quint-ease-in"  
+-"quint-ease-out"  
+-"quint-ease-in-out"  
+-"quart-ease-in"  
+-"quart-ease-out"  
+-"quart-ease-in-out"  
+-"sine-ease-in"  
+-"sine-ease-out"  
+-"sine-ease-in-out"  
+-"expo-ease-in"  
+-"expo-ease-out"  
+-"expo-ease-in-out"  
+-"circ-ease-in"
+-"circ-ease-out"  
+-"circ-ease-in-out"  
+-"back-ease-in"  
+-"back-ease-out"  
+-"back-ease-in-out" 
+> 
+> Delay
+> 
+> - *delay* - the amount of time before a transition begins in seconds
+> `Jeans.transition(element, { delay: 0.25 })`
+> 
+> onEnd
+> 
+> - *onEnd* - A function called when the transition is complete
+> `Jeans.transition(element, { onEnd: myCallback })`
+> 
+> onEndArgs
+> 
+> - *onEndArgs* - An array of arguments for the *onEnd* function
+> `Jeans.transition(element, { onEnd: myCallback, onEndArgs: ['foo', 'bar'] })`
 
+---
+**animation**() method
+function animation(element: HTMLDomElement, keyframes: String, properties: Object): void
+Creates a CSS Animation
+**Parameters**
+element: HTMLDomElement -- A DOM Element to apply an animation to
+keyframes: String -- CSS keyframes to add to the element
+properties: Object -- An object that contains key value pairs about the animation
+> **Properties May Contain:**
+> Duration
+> 
+> - *time* - the duration of the animation in seconds
+> `Jeans.animation(element, myKeyframes, { time: 0.5 })`
+> 
+> Timing Function
+> 
+> - *ease* - the value is a string
+> `Jeans.animation(element, myKeyframes, {ease:"cubic-bezier(1,1,1,1)"})`
+> - Jeans comes with several timing functions (see timing functions for *transition*)
+> 
+> Delay
+> 
+> - *delay* - the amount of time before an animation begins in seconds
+> `Jeans.animation(element, myKeyframes, { delay: 0.25 })`
+> 
+> onEnd
+> 
+> - *onEnd* - a function called when the transition is complete
+> `Jeans.animation(element, myKeyframes, { onEnd: myCallback })`
+> 
+> onEndArgs
+> 
+> - *onEndArgs* - an array of arguments for the *onEnd* function
+> `Jeans.animation(element, myKeyframes, { onEnd: myCallback, onEndArgs: ['foo', 'bar'] })`
 
-### **animation()**
-    
-
+---
