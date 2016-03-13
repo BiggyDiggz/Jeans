@@ -120,7 +120,7 @@ properties: Object -- An object that contains key value pairs about the transiti
 > - *onEndArgs* - An array of arguments for the *onEnd* function
 > `Jeans.transition(element, { onEnd: myCallback, onEndArgs: ['foo', 'bar'] })`
 
----
+
 **animation**() method
 function animation(element: HTMLDomElement, keyframes: String, properties: Object): void
 Creates a CSS Animation
@@ -155,4 +155,34 @@ properties: Object -- An object that contains key value pairs about the animatio
 > - *onEndArgs* - an array of arguments for the *onEnd* function
 > `Jeans.animation(element, myKeyframes, { onEnd: myCallback, onEndArgs: ['foo', 'bar'] })`
 
----
+
+**scrollTo**() method
+function scrollTo(element: HTMLDomElement, properties: Object): void
+Scrolls an element
+**Parameters**
+element: HTMLDomElement -- A DOM Element to apply a scroll to
+properties: Object -- An object that contains key value pairs about the scroll animation
+> **Properties May Contain:**
+> Duration
+> 
+> - *time* - the duration of the scroll in seconds
+> `Jeans.scrollTo(element, { time: 0.5 })`
+> 
+> ScrollTop
+> 
+> - *top* - the end scroll position of the element
+> 
+> Delay
+> 
+> - *delay* - the amount of time before the scrollTop animation begins in seconds
+> `Jeans.scrollTop(element, { top: 0 })`
+> 
+> onEnd
+> 
+> - *onEnd* - a function called when the scrollTop animation is complete
+> `Jeans.scrollTop(element, { onEnd: myCallback })`
+> 
+> onEndArgs
+> 
+> - *onEndArgs* - an array of arguments for the *onEnd* function
+> `Jeans.scrollTop(element, { onEnd: myCallback, onEndArgs: ['foo', 'bar'] })`
