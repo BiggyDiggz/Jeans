@@ -122,7 +122,7 @@ Jeans.transition(element, {
 ```
 
 <br>
-####**animation()**#### method<br>
+####**animation()**####
 function animation(element: HTMLDomElement, keyframes: String, properties: Object): void<br>
 **Parameters**<br>
 element: HTMLDomElement -- A DOM Element to apply an animation to<br>
@@ -168,7 +168,7 @@ Jeans.animation(element, myKeframes, {
 ```
 
 <br>
-####**scrollTo()**##### method<br>
+####**scrollTo()**#####
 function scrollTo(element: HTMLDomElement, properties: Object): void<br>
 **Parameters**<br>
 element: HTMLDomElement -- A DOM Element to apply a scroll to<br>
