@@ -3,20 +3,6 @@ Jeans
 
 A Javascript engine for animating neat stuff.
 
-
-Example Usage
-```javascript
-Jeans.transition(element, { 
-  time: 0.5
-	x:500, 
-	blur: 5,
-	ease:'quad-ease-in-out', 
-	delay:0.35, 
-	onEnd:myFunction, 
-	onEndArgs:['foo','bar'] 
-	}
-); 
-```
 ###Public Methods
 **transition**(element: HTMLDomElement, properties: Object): void<br>
 Creates a css transition
@@ -120,6 +106,20 @@ properties: Object -- An object that contains key value pairs about the transiti
 > - *onEndArgs* - An array of arguments for the *onEnd* function <br>
 > `Jeans.transition(element, { onEnd: myCallback, onEndArgs: ['foo', 'bar'] })`
 
+Example Usage
+```javascript
+Jeans.transition(element, { 
+  time: 0.5
+	x:500, 
+	blur: 5,
+	ease:'quad-ease-in-out', 
+	delay:0.35, 
+	onEnd:myFunction, 
+	onEndArgs:['foo','bar'] 
+	}
+); 
+```
+
 <br>
 **animation**() method<br>
 function animation(element: HTMLDomElement, keyframes: String, properties: Object): void<br>
@@ -154,6 +154,18 @@ properties: Object -- An object that contains key value pairs about the animatio
 > - *onEndArgs* - an array of arguments for the *onEnd* function <br>
 > `Jeans.animation(element, myKeyframes, { onEnd: myCallback, onEndArgs: ['foo', 'bar'] })`
 
+Example Usage
+```javascript
+Jeans.animation(element, myKeframes, { 
+    time: 0.25, 
+    ease: "sine-ease-in", 
+    delay: 0.5,
+    onEnd:myFunction, 
+    onEndArgs:['foo','bar'] 
+  }
+); 
+```
+
 <br>
 **scrollTo**() method<br>
 function scrollTo(element: HTMLDomElement, properties: Object): void<br>
@@ -185,3 +197,14 @@ properties: Object -- An object that contains key value pairs about the scroll a
 > 
 > - *onEndArgs* - an array of arguments for the *onEnd* function <br>
 > `Jeans.scrollTop(element, { onEnd: myCallback, onEndArgs: ['foo', 'bar'] })`
+
+Example Usage
+```javascript
+Jeans.transition(element, { 
+    time: 0.5
+    top: 0,
+    onEnd:myFunction, 
+    onEndArgs:['foo','bar'] 
+  }
+); 
+```
