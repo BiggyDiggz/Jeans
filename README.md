@@ -201,7 +201,7 @@ properties: Object -- An object that contains key value pairs about the scroll a
 
 Example Usage
 ```javascript
-Jeans.transition(element, { 
+Jeans.scrollTo(element, { 
     duration: 0.5
     top: 0,
     onEnd:myFunction, 
