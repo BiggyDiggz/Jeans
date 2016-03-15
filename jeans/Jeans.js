@@ -24,7 +24,7 @@
 
 var Jeans = (function() {
 
-	var FRAME_RATE = 33;
+	var SCROLL_FRAME_RATE = 33;
 
 	var transformProps = ["x", "y", "z", "scaleX", "scaleY", "scaleZ", "rotate", "rotateX", "rotateY", "rotateZ", "skewX", "skewY"];
 	var filters = ["blur", "brightness", "contrast", "dropShadow", "grayscale", "hueRotate", "invert", "saturate", "sepia"];
@@ -152,7 +152,7 @@ var Jeans = (function() {
 	}
 
 	function animateScroll(obj) {
-		var totalSteps = obj.props.duration / FRAME_RATE;
+		var totalSteps = obj.props.duration / SCROLL_FRAME_RATE;
 		var top = easeOutExpo(obj.step++, obj.beginTop, obj.change, totalSteps);
 		obj.element.scrollTop = top;
 		if (obj.step >= totalSteps) {
@@ -164,7 +164,7 @@ var Jeans = (function() {
 				requestAnimationFrame(function () {
 					animateScroll(obj);
 				});
-			}, FRAME_RATE);
+			}, SCROLL_FRAME_RATE);
 		}
 	}
 
