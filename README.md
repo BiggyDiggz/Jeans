@@ -157,7 +157,7 @@ properties: Object -- An object that contains key value pairs about the animatio
 
 Example Usage
 ```javascript
-Jeans.animation(element, myKeframes, { 
+Jeans.animation(element, myKeyframes, { 
     duration: 0.25, 
     ease: "sine-ease-in", 
     delay: 0.5,
