@@ -28,7 +28,7 @@ properties: Object -- An object that contains key value pairs about the transiti
 > - *duration* - the duration of the transition in seconds <br>
 > `Jeans.transition(element, { duration: 0.5 })`
 > 
-> Any animatable CSS Property - *left, top, width, height, etc..*
+> Any animatable incremental CSS Property - *left, top, width, height, etc..*
 > 
 > - CSS properties with dashes are camel cased e.g. *background-color* becomes *backgroundColor*
 > - Pixel values are numbers. Omit "px" <br>
