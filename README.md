@@ -3,6 +3,8 @@ Jeans
 
 A Javascript engine for animating neat stuff.
 
+[Demos](http://codepen.io/BiggyDiggz/pen/aNKVga)
+
 ###Public Methods
 **transition**(element: HTMLDomElement, properties: Object): void<br>
 Creates a css transition
