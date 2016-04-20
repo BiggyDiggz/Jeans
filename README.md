@@ -3,7 +3,7 @@ Jeans
 
 A Javascript engine for animating neat stuff.
 
-[Demos](http://codepen.io/BiggyDiggz/pen/aNKVga)
+<a href="http://codepen.io/BiggyDiggz/pen/aNKVga" target="_blank">Demos</a>
 
 ###Public Methods
 **transition**(element: HTMLDomElement, properties: Object): void<br>
