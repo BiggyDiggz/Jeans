@@ -1,5 +1,7 @@
 /**
- * The MIT License (MIT)
+ The MIT License (MIT)
+
+ JEANS - https://github.com/BiggyDiggz/Jeans
 
  Copyright (c) 2016 William Do
 
